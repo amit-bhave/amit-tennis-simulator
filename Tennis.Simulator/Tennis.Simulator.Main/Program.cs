@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using Autofac;
 using Tennis.Simulator.Models;
 using Tennis.Simulator.Services;
@@ -26,6 +27,16 @@ namespace Tennis.Simulator.Main
 			builder.RegisterType<SetService>().As<ISetService>();
 			builder.RegisterType<MatchService>().As<IMatchService>();
 
+			if (ConfigurationManager.AppSettings["PrintToFile"].ToUpperInvariant() == "YES")
+			{
+				builder.RegisterType<FilePrinter>().As<IPrintService>();
+			}
+			else
+			{
+				builder.RegisterType<ConsolePrinter>().As<IPrintService>();
+			}
+			
+
 			Container = builder.Build();
 		}
 
@@ -48,9 +59,15 @@ namespace Tennis.Simulator.Main
 					Name = "Fed"
 				};
 				
-				Console.WriteLine(" Starting Tennis Match..");
 
 				var matchservice = scope.Resolve<IMatchService>();
+				var printService = scope.Resolve<IPrintService>();
+
+				printService.Print("***************************************************");
+				printService.Print($" Starting Tennis Match {playerOne.Name} vs {playerTwo.Name}");
+				printService.Print("***************************************************");
+
+				printService.Print("");
 
 				var winner = matchservice.Play();
 
@@ -58,25 +75,32 @@ namespace Tennis.Simulator.Main
 
 				foreach (var set in matchservice.SetScores)
 				{
-					Console.WriteLine($"Starting Set # {setcounter}");
+					printService.Print("");
+					printService.Print($"Starting Set # {setcounter}");
 					var gamecounter = 1;
 					foreach (var game in set.GameScores)
 					{
-						Console.WriteLine($"Begining Set# {setcounter} Game# {gamecounter}");
-						Console.WriteLine("love -love");
+						printService.Print("");
+						printService.Print($"Begining Set# {setcounter} Game# {gamecounter}");
+						printService.Print("love -love");
 						foreach (var point in game.PointsScrore)
 						{
-							Console.WriteLine(point);
+							printService.Print(point);
 						}
 
-						Console.WriteLine($"Set# {setcounter} Game# {gamecounter} ended. {game.Score}");
+						printService.Print($"Set# {setcounter} Game# {gamecounter} ended. {game.Score}");
+						printService.Print("");
 						gamecounter++;
 					}
-					Console.WriteLine($"Set# {setcounter} ended. {set.Score}");
+					printService.Print($"Set# {setcounter} ended. {set.Score}");
+					printService.Print("");
 					setcounter++;
 				}
 
-				Console.WriteLine(winner == PlayerSide.SideOne ? "Side 1" : "Side 2" + " won the match.");
+				printService.Print("***************************************************");
+				printService.Print(winner == PlayerSide.SideOne ? $"{playerOne.Name} won the match." : $"{playerTwo.Name} won the match.");
+				printService.Print("***************************************************");
+
 				Console.ReadKey();
 			}
 

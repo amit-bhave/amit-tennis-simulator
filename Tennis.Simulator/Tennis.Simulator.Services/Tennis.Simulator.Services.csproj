@@ -41,11 +41,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConsolePrinter.cs" />
+    <Compile Include="FilePrinter.cs" />
     <Compile Include="GameService.cs" />
     <Compile Include="GetPointWinnerService.cs" />
     <Compile Include="InterFaces\IGameService.cs" />
     <Compile Include="InterFaces\IGetPointWinnerService.cs" />
     <Compile Include="InterFaces\IMatchService.cs" />
+    <Compile Include="InterFaces\IPrintService.cs" />
     <Compile Include="InterFaces\ISetService.cs" />
     <Compile Include="MatchService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

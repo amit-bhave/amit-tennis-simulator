@@ -15,7 +15,8 @@
 		    Thirty,
 		    Forty,
 		    Deuce,
-		    Advantage
+		    Advantage,
+			Win
 	    }
 
 	    public enum GameState

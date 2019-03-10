@@ -42,12 +42,12 @@
 
 		private bool IsDeuce()
 		{
-			return (int)PlayerOnePoints >= 4 && (int)PlayerTwoPoints >= 4;
+			return PlayerOnePoints == Points.Deuce && PlayerTwoPoints == Points.Deuce;
 		}
 
 		private void AddPointtoSide(PlayerSide winner)
 		{
-			var points = GetPoints(winner);
+			var points = GetPoints(winner);			
 
 			switch (points)
 			{
@@ -61,10 +61,34 @@
 					SetPoints(winner, Points.Thirty);
 					break;
 				case Points.Thirty:
-					SetPoints(winner, Points.Forty);
+					var opponentPoints = winner == PlayerSide.SideOne ? PlayerTwoPoints : PlayerOnePoints;
+					if (opponentPoints == Points.Forty)
+					{
+						PlayerOnePoints = Points.Deuce;
+						PlayerTwoPoints = Points.Deuce;
+					}
+					else
+					{
+						SetPoints(winner, Points.Forty);
+					}					
 					break;
 				case Points.Forty:
-					SetPoints(winner, Points.Deuce);
+					SetPoints(winner, Points.Win);
+					break;
+				case Points.Deuce:
+					var opponentPointsDeuce = winner == PlayerSide.SideOne ? PlayerTwoPoints : PlayerOnePoints;
+					if (opponentPointsDeuce == Points.Advantage)
+					{
+						PlayerOnePoints = Points.Deuce;
+						PlayerTwoPoints = Points.Deuce;
+					}
+					else
+					{
+						SetPoints(winner, Points.Advantage);
+					}					
+					break;
+				case Points.Advantage:
+					SetPoints(winner, Points.Win);
 					break;
 			}
 		}
@@ -104,26 +128,9 @@
 				if (IsDeuce())
 				{
 					GameState = GameState.Deuce;
-
-					if (GetPoints(pointWinnerSide) == Points.Advantage)
-					{
-						GameState = FinishGameandReturnWinner(pointWinnerSide);
-						return;
-					}
-
-					if ((PlayerOnePoints == Points.Deuce && PlayerTwoPoints == Points.Deuce) ||
-						(PlayerOnePoints == Points.Forty && PlayerTwoPoints == Points.Forty))
-					{
-						SetPoints(pointWinnerSide, Points.Advantage);
-						return;
-					}
-
-					PlayerOnePoints = Points.Deuce;
-					PlayerOnePoints = Points.Deuce;
-					return;
 				}
 
-				if (((int)GetPoints(pointWinnerSide)) > 3)
+				if (GetPoints(pointWinnerSide) == Points.Win)
 				{
 					GameState = FinishGameandReturnWinner(pointWinnerSide);
 				}
